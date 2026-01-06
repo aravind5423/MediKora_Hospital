@@ -6,25 +6,25 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
+    --background: 0 0% 100%;
+    --foreground: 260 80% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 260 80% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 260 80% 20%;
 
-    --primary: 199 89% 48%;
+    --primary: 260 80% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 260 40% 95%;
+    --secondary-foreground: 260 80% 20%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 260 40% 95%;
+    --muted-foreground: 260 16% 47%;
 
-    --accent: 172 66% 50%;
+    --accent: 260 66% 70%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -36,30 +36,30 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 199 89% 48%;
+    --border: 260 20% 90%;
+    --input: 260 20% 90%;
+    --ring: 260 80% 50%;
 
     --radius: 0.75rem;
 
-    --navy: 222 47% 11%;
-    --navy-light: 217 33% 17%;
+    --navy: 260 47% 11%;
+    --navy-light: 260 33% 17%;
     --slate: 215 16% 47%;
     --teal: 172 66% 50%;
     --teal-light: 172 66% 95%;
     --sky: 199 89% 48%;
     --sky-light: 199 89% 95%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(199, 89%, 48%) 0%, hsl(172, 66%, 50%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(210, 20%, 98%) 0%, hsl(199, 89%, 97%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(210, 40%, 99%) 100%);
-    --gradient-navy: linear-gradient(135deg, hsl(222, 47%, 11%) 0%, hsl(217, 33%, 17%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(260, 80%, 50%) 0%, hsl(172, 66%, 50%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(260, 80%, 97%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(260, 40%, 99%) 100%);
+    --gradient-navy: linear-gradient(135deg, hsl(260, 47%, 11%) 0%, hsl(260, 33%, 17%) 100%);
 
-    --shadow-sm: 0 1px 2px 0 hsl(222 47% 11% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(222 47% 11% / 0.08), 0 2px 4px -2px hsl(222 47% 11% / 0.05);
-    --shadow-lg: 0 10px 15px -3px hsl(222 47% 11% / 0.08), 0 4px 6px -4px hsl(222 47% 11% / 0.05);
-    --shadow-xl: 0 20px 25px -5px hsl(222 47% 11% / 0.1), 0 8px 10px -6px hsl(222 47% 11% / 0.05);
-    --shadow-glow: 0 0 40px hsl(199 89% 48% / 0.15);
+    --shadow-sm: 0 1px 2px 0 hsl(260 47% 11% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(260 47% 11% / 0.08), 0 2px 4px -2px hsl(260 47% 11% / 0.05);
+    --shadow-lg: 0 10px 15px -3px hsl(260 47% 11% / 0.08), 0 4px 6px -4px hsl(260 47% 11% / 0.05);
+    --shadow-xl: 0 20px 25px -5px hsl(260 47% 11% / 0.1), 0 8px 10px -6px hsl(260 47% 11% / 0.05);
+    --shadow-glow: 0 0 40px hsl(260 80% 48% / 0.15);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -167,12 +167,38 @@
   .animate-pulse-soft {
     animation: pulseSoft 2s ease-in-out infinite;
   }
+
+  /* Professional UI Utilities */
+  .glass {
+    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-sm;
+  }
+
+  .glass-dark {
+    @apply bg-gray-900/70 backdrop-blur-lg border border-white/10 shadow-sm;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-glow transition-all duration-300;
+  }
+
+  .input-field {
+    @apply bg-background border-input focus:ring-2 focus:ring-primary/20 transition-all duration-200;
+  }
+
+  .container-centered {
+    @apply container mx-auto px-4 max-w-7xl;
+  }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -183,6 +209,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -194,6 +221,7 @@
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -205,6 +233,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -212,9 +241,12 @@
 }
 
 @keyframes pulseSoft {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }

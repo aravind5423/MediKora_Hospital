@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useHospitalData } from '@/contexts/HospitalDataContext';
 import { useToast } from '@/hooks/use-toast';
-import { Users, Plus, Pencil, Trash2, Clock, Mail, Phone, CalendarPlus, Calendar, Ban, CheckCircle, X } from 'lucide-react';
+import { Users, Plus, Pencil, Trash2, Clock, Mail, Phone, CalendarPlus, Calendar, Ban, CheckCircle, X, User } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,12 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Doctors() {
   const { doctors, departments, timeSlots, addDoctor, updateDoctor, deleteDoctor, generateSlots, updateTimeSlot, deleteTimeSlot } = useHospitalData();
@@ -109,7 +115,7 @@ export default function Doctors() {
   const handleCreateSlots = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDoctorForSlots) return;
-    
+
     const doctor = doctors.find(d => d.id === selectedDoctorForSlots);
     if (!doctor) return;
 
@@ -121,7 +127,7 @@ export default function Doctors() {
       doctor.consultationDuration
     );
 
-    toast({ 
+    toast({
       title: 'Slots created successfully',
       description: `Time slots generated for ${doctor.name} on ${slotFormData.date}`,
     });
@@ -136,6 +142,19 @@ export default function Doctors() {
   const handleUnblockSlot = (slotId: string) => {
     updateTimeSlot(slotId, { status: 'AVAILABLE' });
     toast({ title: 'Slot unblocked' });
+  };
+
+  const handleCancelBooking = (slotId: string) => {
+    if (window.confirm("Are you sure you want to cancel this booking?")) {
+      updateTimeSlot(slotId, {
+        status: 'AVAILABLE',
+        patientId: null as any,
+        patientName: null as any,
+        patientPhone: null as any,
+        bookedAt: null as any
+      });
+      toast({ title: 'Booking cancelled' });
+    }
   };
 
   const handleDeleteSlot = (slotId: string) => {
@@ -180,8 +199,8 @@ export default function Doctors() {
 
   const selectedDoctor = selectedDoctorForSlots ? doctors.find(d => d.id === selectedDoctorForSlots) : null;
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
+  const getStatusBadge = (slot: typeof timeSlots[0]) => {
+    switch (slot.status) {
       case 'AVAILABLE':
         return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">Available</Badge>;
       case 'BOOKED':
@@ -189,7 +208,7 @@ export default function Doctors() {
       case 'BLOCKED':
         return <Badge className="bg-red-500/10 text-red-600 border-red-500/20">Blocked</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline">{slot.status}</Badge>;
     }
   };
 
@@ -255,7 +274,7 @@ export default function Doctors() {
                           <span>{doctor.consultationDuration} min per consultation</span>
                         </div>
                       </div>
-                      
+
                       <div className="pt-3 border-t">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2 text-sm">
@@ -263,8 +282,8 @@ export default function Doctors() {
                             <span className="font-medium">{getUpcomingSlotCount(doctor.id)} available slots</span>
                           </div>
                         </div>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           className="w-full"
                           onClick={() => handleOpenSlotDialog(doctor.id)}
                         >
@@ -324,8 +343,8 @@ export default function Doctors() {
                   </div>
                   {(slotFilterDoctor !== 'all' || slotFilterDate) && (
                     <div className="flex items-end">
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         onClick={() => { setSlotFilterDoctor('all'); setSlotFilterDate(''); }}
                       >
                         Clear Filters
@@ -346,11 +365,11 @@ export default function Doctors() {
                         <div>
                           <CardTitle className="text-lg">{getDoctorName(group.doctorId)}</CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            {new Date(group.date).toLocaleDateString('en-US', { 
-                              weekday: 'long', 
-                              year: 'numeric', 
-                              month: 'long', 
-                              day: 'numeric' 
+                            {new Date(group.date).toLocaleDateString('en-US', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
                             })}
                           </p>
                         </div>
@@ -360,52 +379,112 @@ export default function Doctors() {
                     <CardContent>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                         {group.slots.map((slot) => (
-                          <div 
-                            key={slot.id} 
-                            className={`p-3 rounded-lg border text-center transition-all ${
-                              slot.status === 'BLOCKED' 
-                                ? 'bg-red-500/5 border-red-500/20' 
+                          <div
+                            key={slot.id}
+                            className={`p-3 rounded-lg border text-center transition-all ${slot.status === 'BLOCKED'
+                                ? 'bg-red-500/5 border-red-500/20'
                                 : slot.status === 'BOOKED'
-                                ? 'bg-blue-500/5 border-blue-500/20'
-                                : 'bg-secondary/50 border-border hover:border-primary/50'
-                            }`}
+                                  ? 'bg-blue-500/5 border-blue-500/20'
+                                  : 'bg-secondary/50 border-border hover:border-primary/50'
+                              }`}
                           >
                             <p className="font-medium text-sm mb-1">
                               {slot.startTime} - {slot.endTime}
                             </p>
                             <div className="mb-2">
-                              {getStatusBadge(slot.status)}
+                              {getStatusBadge(slot)}
                             </div>
+
+                            {slot.status === 'BOOKED' && slot.patientName && (
+                              <div className="text-xs text-muted-foreground mb-2 truncate">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center justify-center gap-1 cursor-help">
+                                        <User className="w-3 h-3" />
+                                        <span className="truncate max-w-[80px]">{slot.patientName}</span>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Patient: {slot.patientName}</p>
+                                      <p>Phone: {slot.patientPhone || 'N/A'}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                            )}
+
                             <div className="flex gap-1 justify-center">
                               {slot.status === 'AVAILABLE' && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  className="h-7 px-2"
-                                  onClick={() => handleBlockSlot(slot.id)}
-                                >
-                                  <Ban className="w-3 h-3" />
-                                </Button>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 px-2 hover:bg-red-100 hover:text-red-600"
+                                        onClick={() => handleBlockSlot(slot.id)}
+                                      >
+                                        <Ban className="w-3 h-3" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Block Slot</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               )}
+
                               {slot.status === 'BLOCKED' && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  className="h-7 px-2"
-                                  onClick={() => handleUnblockSlot(slot.id)}
-                                >
-                                  <CheckCircle className="w-3 h-3" />
-                                </Button>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 px-2 hover:bg-emerald-100 hover:text-emerald-600"
+                                        onClick={() => handleUnblockSlot(slot.id)}
+                                      >
+                                        <CheckCircle className="w-3 h-3" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Unblock Slot</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               )}
+
+                              {slot.status === 'BOOKED' && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 px-2 text-orange-500 hover:text-orange-600 hover:bg-orange-100"
+                                        onClick={() => handleCancelBooking(slot.id)}
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Cancel Booking</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+
                               {slot.status !== 'BOOKED' && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  className="h-7 px-2 text-destructive hover:text-destructive"
-                                  onClick={() => handleDeleteSlot(slot.id)}
-                                >
-                                  <X className="w-3 h-3" />
-                                </Button>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 px-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                        onClick={() => handleDeleteSlot(slot.id)}
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Delete Slot</TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               )}
                             </div>
                           </div>
@@ -421,8 +500,8 @@ export default function Doctors() {
                   <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-foreground mb-2">No slots found</h3>
                   <p className="text-muted-foreground mb-4">
-                    {timeSlots.length === 0 
-                      ? "Create slots for doctors from the Doctors tab" 
+                    {timeSlots.length === 0
+                      ? "Create slots for doctors from the Doctors tab"
                       : "No slots match your current filters"}
                   </p>
                 </CardContent>

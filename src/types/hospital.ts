@@ -29,6 +29,9 @@ export interface Doctor {
   hospitalId: string;
   consultationDuration: number; // in minutes
   profileImage?: string;
+  hospitalName?: string;
+  hospitalAddress?: string;
+  hospitalCity?: string;
 }
 
 export interface TimeSlot {
@@ -40,6 +43,11 @@ export interface TimeSlot {
   endTime: string;
   status: 'AVAILABLE' | 'BOOKED' | 'BLOCKED';
   bookedBy?: string;
+  patientId?: string;
+  patientName?: string;
+  patientPhone?: string;
+  bookedAt?: string; // ISO date string
+  appointmentType?: 'In-person' | 'Video';
 }
 
 export interface OPTiming {
