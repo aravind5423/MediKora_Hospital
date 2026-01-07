@@ -30,10 +30,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="p-6 border-b">
         <Link to="/dashboard" className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
-            <Calendar className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold text-foreground">MediKora</span>
+          <span className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">MediKora</span>
         </Link>
       </div>
 

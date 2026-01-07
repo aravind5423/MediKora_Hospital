@@ -14,7 +14,6 @@ export default function Dashboard() {
   const todaySlots = timeSlots.filter(s => s.date === new Date().toISOString().split('T')[0]).length;
 
   const stats = [
-    { label: 'Departments', value: departments.length, icon: Building2, color: 'text-primary' },
     { label: 'Doctors', value: doctors.length, icon: Users, color: 'text-accent' },
     { label: 'Available Slots', value: availableSlots, icon: CalendarDays, color: 'text-success' },
     { label: 'Booked Today', value: bookedSlots, icon: Clock, color: 'text-warning' },
@@ -71,10 +70,9 @@ export default function Dashboard() {
                 ].map((activity, i) => (
                   <div key={i} className="flex items-center justify-between py-3 border-b last:border-0">
                     <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${
-                        activity.type === 'success' ? 'bg-success' :
+                      <div className={`w-2 h-2 rounded-full ${activity.type === 'success' ? 'bg-success' :
                         activity.type === 'warning' ? 'bg-warning' : 'bg-primary'
-                      }`} />
+                        }`} />
                       <span className="text-foreground">{activity.action}</span>
                     </div>
                     <span className="text-sm text-muted-foreground">{activity.time}</span>
@@ -84,34 +82,58 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Quick Actions */}
+          {/* Upcoming Appointments */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-primary" />
-                Departments Overview
+                <CalendarDays className="w-5 h-5 text-primary" />
+                Upcoming Appointments
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {departments.map((dept) => {
-                  const deptDoctors = doctors.filter(d => d.departmentId === dept.id);
-                  return (
-                    <div key={dept.id} className="flex items-center justify-between py-3 border-b last:border-0">
-                      <div>
-                        <p className="font-medium text-foreground">{dept.name}</p>
-                        <p className="text-sm text-muted-foreground">{dept.description}</p>
+                {timeSlots
+                  .filter(s => s.status === 'BOOKED')
+                  .sort((a, b) => new Date(`${a.date}T${a.startTime}`).getTime() - new Date(`${b.date}T${b.startTime}`).getTime())
+                  .slice(0, 5)
+                  .map((slot) => {
+                    const doctor = doctors.find(d => d.id === slot.doctorId);
+                    return (
+                      <div key={slot.id} className="flex items-center justify-between py-3 border-b last:border-0 hover:bg-muted/50 transition-colors rounded-lg px-2 -mx-2">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                            {slot.patientName?.[0] || 'P'}
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">{slot.patientName || 'Unknown Patient'}</p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                              {doctor?.name || 'Unknown Doctor'}
+                              <span className="w-1 h-1 rounded-full bg-border" />
+                              {slot.appointmentType || 'In-person'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-medium text-foreground">
+                            {slot.startTime}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(slot.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          </div>
+                        </div>
                       </div>
-                      <Badge variant="secondary">
-                        {deptDoctors.length} Doctor{deptDoctors.length !== 1 ? 's' : ''}
-                      </Badge>
+                    );
+                  })}
+                {timeSlots.filter(s => s.status === 'BOOKED').length === 0 && (
+                  <div className="text-center py-10">
+                    <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                      <CalendarDays className="w-6 h-6 text-muted-foreground" />
                     </div>
-                  );
-                })}
-                {departments.length === 0 && (
-                  <p className="text-muted-foreground text-center py-8">
-                    No departments added yet
-                  </p>
+                    <p className="text-foreground font-medium">No upcoming appointments</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Share your booking link to start receiving appointments.
+                    </p>
+                  </div>
                 )}
               </div>
             </CardContent>
@@ -135,13 +157,12 @@ export default function Dashboard() {
                   .map((slot) => (
                     <div
                       key={slot.id}
-                      className={`p-3 rounded-xl text-center text-sm font-medium ${
-                        slot.status === 'AVAILABLE'
-                          ? 'bg-success/10 text-success border border-success/20'
-                          : slot.status === 'BOOKED'
+                      className={`p-3 rounded-xl text-center text-sm font-medium ${slot.status === 'AVAILABLE'
+                        ? 'bg-success/10 text-success border border-success/20'
+                        : slot.status === 'BOOKED'
                           ? 'bg-warning/10 text-warning border border-warning/20'
                           : 'bg-muted text-muted-foreground border border-border'
-                      }`}
+                        }`}
                     >
                       {slot.startTime} - {slot.endTime}
                     </div>
