@@ -2,7 +2,6 @@
 
 **MediKora Hospital** is a modern, comprehensive Hospital Management System designed to streamline healthcare facility operations. It allows hospitals to manage doctors, departments, and appointment slots efficiently while providing a seamless booking experience for patients.
 
-![MediKora Dashboard](./public/placeholder.svg)
 
 ## 🚀 Key Features
 
