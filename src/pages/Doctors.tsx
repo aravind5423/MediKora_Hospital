@@ -148,10 +148,10 @@ export default function Doctors() {
     if (window.confirm("Are you sure you want to cancel this booking?")) {
       updateTimeSlot(slotId, {
         status: 'AVAILABLE',
-        patientId: null as any,
-        patientName: null as any,
-        patientPhone: null as any,
-        bookedAt: null as any
+        patientId: undefined,
+        patientName: undefined,
+        patientPhone: undefined,
+        bookedAt: undefined
       });
       toast({ title: 'Booking cancelled' });
     }
@@ -382,10 +382,10 @@ export default function Doctors() {
                           <div
                             key={slot.id}
                             className={`p-3 rounded-lg border text-center transition-all ${slot.status === 'BLOCKED'
-                                ? 'bg-red-500/5 border-red-500/20'
-                                : slot.status === 'BOOKED'
-                                  ? 'bg-blue-500/5 border-blue-500/20'
-                                  : 'bg-secondary/50 border-border hover:border-primary/50'
+                              ? 'bg-red-500/5 border-red-500/20'
+                              : slot.status === 'BOOKED'
+                                ? 'bg-blue-500/5 border-blue-500/20'
+                                : 'bg-secondary/50 border-border hover:border-primary/50'
                               }`}
                           >
                             <p className="font-medium text-sm mb-1">
